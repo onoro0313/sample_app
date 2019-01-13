@@ -8,9 +8,15 @@
   <body>
     <%= render 'layouts/header' %>
   <div class="container">
+    <% flash.each do |message_type, message| %>
+    <!-- flash変数はハッシュの形、success、info、warning、dangerの4つをkeyとして持つ -->
+    <%= content_tag(:div, message, class: "alert alert-#{message_type}") %>
+
+    <!-- bootstrapの使用、alert-以下をflashの内容によってクラス名を変更。cssをあてがうことが出来るようになる。Bootstrap CSSは、このようなflashのクラス用に4つのスタイルを持っています (success、info、warning、danger)。 -->
+    <% end %>
     <%= yield %>
     <%= render 'layouts/footer' %>
-
+    <%= debug(params) if Rails.env.development? %>
   </div>
   </body>
 </html>
