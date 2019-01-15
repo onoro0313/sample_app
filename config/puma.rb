@@ -16,6 +16,12 @@ on_worker_boot do
   ActiveRecord::Base.establish_connection
 end
 
+#SSLを導入したので、次はアプリケーションの設定をいじって、本番環境に適したWebサーバを使ってみましょう。Herokuのデフォルトでは、Rubyだけで実装されたWEBrickというWebサーバを使っています。WEBrickは簡単にセットアップできたり動せることが特長ですが、著しいトラフィックを扱うことには適していません。つまり、WEBrickは本番環境として適切なWebサーバではありません。よって、今回はWEBrickをPumaというWebサーバに置き換えてみます。Pumaは多数のリクエストを捌くことに適したWebサーバです。
+
+# 新しいWebサーバを追加するために、Heroku内のPumaドキュメント (英語) に従ってセットアップしていきます。
+
+# 最初のステップはpuma gemをGemfileに追加することなのですが、なんとRails 5では、Pumaはデフォルトの設定でも使えるようになっています (リスト 3.2)。したがって、最初のステップはスキップします (ちなみにRails 4.2以前ではconfig/puma.rbファイルを作成し、リスト 7.37のように設定していました)。次のステップは、HerokuのPumaのドキュメントに従って、設定を書き込んでいくことです (リスト 7.37)13。とはいえ今回はドキュメントのコードをそのまま引用しただけなので、中身は理解しなくても大丈夫です (コラム 1.1)。
+
 # # Puma can serve each request in a thread from an internal thread pool.
 # # The `threads` method setting takes two numbers: a minimum and maximum.
 # # Any libraries that use thread pools should be configured to match
