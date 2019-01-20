@@ -6,7 +6,16 @@ class SessionsController < ApplicationController
     if user&&user.authenticate(params[:session][:password])
     # 論理積/ 取得したユーザーが有効かどうかを決定するために使う。定番の方法。authenticate認証に失敗したときにfalseを返す
       log_in user
-      # moduleを使用。
+      # ログインする。一時的sessionを使う
+      # moduleを使用。helper。
+      params[:session][:remember_me] == '1'? remember(user) : forget(user)
+      # if params[:session][:remember_me] == '1'
+      #   remember(user)
+      # else
+      #   forget(user)
+      # end
+      # ログインしたユーザーを記憶する。具体的には記憶トークンの作成→ダイジェストハッシュ化データベース更新 attribute
+      # moduleを使用。helper。
       redirect_to user
     else
       flash.now[:danger] = 'Invalid email/password combination'
@@ -16,7 +25,13 @@ class SessionsController < ApplicationController
     end
   end
   def destroy
-    log_out
+    log_out if logged_in?
     redirect_to root_url
   end
 end
+
+
+
+
+
+
