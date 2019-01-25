@@ -16,6 +16,11 @@ module SessionsHelper
     #cookiesメソッドで記憶トークンの永続cookiesを作成
   end
 
+# 渡されたユーザーがログイン済みユーザーであればtrueを返す
+  def current_user?(user)
+    user == current_user
+  end
+
   # current_userの定義
   def current_user
     if(user_id = session[:user_id])
@@ -48,5 +53,20 @@ module SessionsHelper
     forget(current_user)
     session.delete(:user_id)
     @current_user = nil
+  end
+  # フレンドリーフォワーディングの実装
+  # 記憶したURLにリダイレクト
+  def redirect_back_or(default)
+    redirect_to(session[:forwarding_url]||default)
+    # リクエストされたURL（session[:forwarding_url←以前アクセスしようとしたURL）に飛び、なければdefaultの引数に飛ぶ
+    session.delete(:forwarding_url)
+    # これをやっておかないと、次回ログインした時に、urlが残ったままで、保護されたページに転送されてしまい、ブラウザを閉じるまでこれが繰り返される
+  end
+
+  # アクセスしようとしたURLを覚えておく
+  def store_location
+    session[:forwarding_url] = request.original_url if request.get?
+    # request.original_urlでリクエスト先が取得できる。それをsession変数の:forwarding_urlキーに格納していく。
+    # getリクエストが送られた時だけ格納、ログインしていないユーザーがフォームを使って送信した場合、転送先のURLを保存させないようにする。
   end
 end

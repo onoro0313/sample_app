@@ -1,0 +1,11 @@
+<% provide(:title, 'All users')%>
+<h1>All users</h1>
+
+<%= will_paginate%>
+<!-- gem will_paginateの傷つ方法 -->
+
+<ul class="users">
+  <%= render @users%>
+  <!-- @usersをUserオブジェクトのリストであると推測。さらにユーザーのコレクションを与えて呼び出すとrailsは自動的にユーザーのコレクションを列挙し、_user.html.erbをパーショルで出力する -->
+</ul>
+<%= will_paginate%>

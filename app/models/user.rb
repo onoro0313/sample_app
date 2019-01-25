@@ -8,7 +8,7 @@ class User < ApplicationRecord
   has_secure_password
   # password_digestカラム #string が必要
   # bcrypt gem も同時に必要
-  validates :password, presence: true, length: { minimum: 6 }
+  validates :password, presence: true, length: { minimum: 6 }, allow_nil: true
 
 # 渡された文字列のハッシュ値を返す。記憶トークンをハッシュ値へ変換しDBに保存する。
   def User.digest(string)

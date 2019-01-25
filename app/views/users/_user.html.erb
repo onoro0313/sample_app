@@ -1,0 +1,11 @@
+<li>
+  <%= gravatar_for user, size: 50%>
+  <%= link_to user.name, user%>
+  <% if current_user.admin? && !current_user?(user)%>
+  <!-- もしcurrent_user.admin?がtrueなおかつ、表示しようとするuserがcurrent_userでない場合 -->
+    |<%= link_to "delete", user, method: :delete,
+    data: {confirm: "You sure?"}%>
+    <!-- 削除用のリンクを追加 user_pathに対してdeleteアクション。
+    dataはhtml上ではdata-confirmとして認識。これらはapplication.jsで読み込むjquery-ujsでハンドリング -->
+  <% end %>
+</li>

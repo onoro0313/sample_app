@@ -1,5 +1,6 @@
 class SessionsController < ApplicationController
   def new
+    # debugger
   end
   def create
     user = User.find_by(email: params[:session][:email].downcase)
@@ -16,7 +17,8 @@ class SessionsController < ApplicationController
       # end
       # ログインしたユーザーを記憶する。具体的には記憶トークンの作成→ダイジェストハッシュ化データベース更新 attribute
       # moduleを使用。helper。
-      redirect_to user
+      redirect_back_or user
+      # フレンドリーフォワーディングを実装。sessionhelperに記述あり。
     else
       flash.now[:danger] = 'Invalid email/password combination'
       # .now その後のリクエストが発生した時に消滅する。
