@@ -31,7 +31,7 @@ module SessionsHelper
     # if @current_user.nil? @current_user = User.find_by~はor演算子「||」を使えば@current_user = @current_user || User.find_by(id: session[:user_id])一行で書ける。さらに@current_user ||= User.find_by(id: session[:user_id])こっちの方が短く早い。代入演算子。
     elsif(user_id = cookies.signed[:user_id])
       user = User.find_by(id:user_id)
-      if user && user.authenticated?(cookies[:remember_token])
+      if user && user.authenticated?(:remember,cookies[:remember_token])
         log_in user
         @current_user = user
       end

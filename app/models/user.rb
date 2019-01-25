@@ -1,6 +1,7 @@
 class User < ApplicationRecord
-  attr_accessor :remember_token
-  before_save {email.downcase!}
+  attr_accessor :remember_token, :activation_token
+  before_save :downcase_email
+  before_create :create_activation_digest
   # ブラウザ間のemail入力の大文字小文字の仕様解消
   validates :name, presence: true, length: {maximum: 50}
   VALID_EMAIL_REGEX = /\A[\w+\-.]+@[a-z\d\-]+(\.[a-z\d\-]+)*\.[a-z]+\z/i
@@ -30,15 +31,39 @@ class User < ApplicationRecord
     # update_attribute 属性のハッシュを受け取り、成功時には更新と保存を続けて同時に行う。
   end
    # 渡されたトークンがダイジェストと一致したらtrueを返す
-  def authenticated?(remember_token)
-    return false if remember_digest.nil?
+  def authenticated?(attribute,token)
+    digest = self.send("#{attribute}_digest")
+    # この場合digestの中身はsendによってレシーバーに対してattributeの中身によって変動する???_digestが渡され、返り値を得る。
+    return false if digest.nil?
     # 渡されたトークンがnilだった場合authenticated?をfalseにする。assert_notに対応。greenでテスト通る
-    BCrypt::Password.new(remember_digest).is_password?(remember_token)
+    BCrypt::Password.new(digest).is_password?(token)
   end
 
   # ユーザーのログイン情報を破棄する。logout機能
   def forget
     update_attribute(:remember_digest, nil)
   end
-
+  # アカウントを有効にする
+  def activate
+    update_attribute(:activated, true)
+      # ユーザーを認証する
+    update_attribute(:activated_at, Time.zone.now)
+      # タイムスタンプの更新
+  end
+  # 有効化用のメールを送信する
+  def send_activation_email
+    UserMailer.account_activation(self).deliver_now
+  end
+  private
+  # メールアドレスを全て小文字にする
+  def downcase_email
+    self.email.downcase!
+  end
+  # 有効化トークンとダイジェストを作成及び代入する
+  def create_activation_digest
+    self.activation_token = User.new_token
+    # トークン作成
+    self.activation_digest = User.digest(activation_token)
+    # ハッシュ化
+  end
 end

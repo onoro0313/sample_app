@@ -1,0 +1,24 @@
+Hi<%= @user.name %>,
+Welcome to the Sample App! Click on the link below to activate your account:
+
+<%= edit_account_activation_url(@user.activation_token, email: @user.email)%>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<!-- 作成されるurlは
+  account_activations/q5lt38hQDc_959PVoo6b7A/edit?email=foo%40example.com
+  こんな感じ。
+  q5lt38hQDc_959PVoo6b7A => new_tokenで生成されbase64でエンコードされたもの。/users/1/editの1のような役割、これは自動でparams[:id]とすることで取ってこれるようになる。
+  ?email=foo%40example.com => クエリパラメーター。?に続けて、キーと値のペアを記述。email: @user.emailとすることで追加可能。コントローラーではparams[:email]からメールアドレスを取り込める。
+-->

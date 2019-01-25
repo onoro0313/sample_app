@@ -2,6 +2,10 @@ require 'test_helper'
 
 class UsersSignupTest < ActionDispatch::IntegrationTest
 
+  def setup
+    ActionMailer::Base.deliveries.clear
+  end
+
   test "invalid signup information" do
     get signup_path
     assert_no_difference 'User.count' do
@@ -14,19 +18,36 @@ class UsersSignupTest < ActionDispatch::IntegrationTest
     assert_select 'div#error_explanation'
     assert_select 'div.alert'
   end
-  test "valid signup information" do
+
+  test "valid signup information with account activation" do
     get signup_path
     assert_difference 'User.count', 1 do
-      post users_path, params: { user: { name:  "Example User",
-        email: "user@example.com",
-        password: "password",
-        password_confirmation: "password" } }
+    # ブロックの処理が終わった後にUsersテーブルにレコードが一個増えているかを確認する。
+      post users_path, params: {user: {name: "Example user",
+                          email: "user@example.com",
+                          password: "password",
+                          password_confirmation: "password"}}
     end
+    assert_equal 1, ActionMailer::Base.deliveries.size
+    #配信されたメッセージがきっかり1つであるかを確認する。
+    # 配列deliveriesは変数。setupメソッドこれを初期化しておかないと、他のテストでエラーが発生する
+    user = assigns(:user)
+    # 対おするアクション内のインスタンス偏すにアクセスできるようになる。usersコントローラーのreateアクションでは@userというインスタンス変数があるが、これにアクセス可能
+    assert_not user.activated?
+    # 有効化していない状態でログインしてみる
+    log_in_as(user)
+    assert_not is_logged_in?
+    # 有効化トークンが不正な場合
+    get edit_account_activation_path("invalid token", email: user.email)
+    assert_not is_logged_in?
+    # トークンは正しいがメールアドレスが無効な場合
+    get edit_account_activation_path(user.activation_token, email: 'wrong')
+    assert_not is_logged_in?
+    # 有効化トークンが正しい場合
+    get edit_account_activation_path(user.activation_token, email: user.email)
+    assert user.reload.activated?
     follow_redirect!
     assert_template 'users/show'
-    assert_not flash.empty?
     assert is_logged_in?
-
   end
-
 end
