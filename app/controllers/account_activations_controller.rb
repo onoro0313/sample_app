@@ -6,7 +6,7 @@ class AccountActivationsController < ApplicationController
       # ①userがあるか？②userがすでに有効化されたものではないか？③:activationをsendで渡し、tokenにはparamsから送られてきた有効化用のトークンを渡す。
       user.activate
       log_in user
-      flash[:success] = "Account activated?"
+      flash[:success] = "Account activated!"
       redirect_to user
     else
       flash[:danger] = "Invalid activation link"

@@ -1,4 +1,8 @@
 Rails.application.routes.draw do
+  get 'password_resets/new'
+
+  get 'password_resets/edit'
+
   get 'sessions/new'
 
   get 'users/new'
@@ -15,4 +19,5 @@ Rails.application.routes.draw do
   resources :users
   resources :account_activations, only: [:edit]
   # 組み込みnリンクをクリックする場合はpatchではなくgetになるから、editで定義
+  resources :password_resets, only:[:new,:create,:edit,:update]
 end
