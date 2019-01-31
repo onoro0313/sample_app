@@ -1,10 +1,11 @@
-<% if @user.errors.any? %>
+<% if object.errors.any? %>
+<!-- @userと@micropostで別々の場合でも、対応可能。objectは、form_for object: f.objectから送られてきたもの -->
   <div id="error_explanation">
     <div class="alert alert-danger">
-      The form contains <%= pluralize(@user.errors.count, "error") %>.
+      The form contains <%= pluralize(object.errors.count, "error") %>.
     </div>
     <ul>
-    <% @user.errors.full_messages.each do |msg| %>
+    <% object.errors.full_messages.each do |msg| %>
       <li><%= msg %></li>
     <% end %>
     </ul>

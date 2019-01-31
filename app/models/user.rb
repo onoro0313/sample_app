@@ -1,4 +1,6 @@
 class User < ApplicationRecord
+  has_many :microposts, dependent: :destroy
+  # dependentによりユーザーが削除された時に紐づいたユーザーも消える
   attr_accessor :remember_token, :activation_token, :reset_token
   before_save :downcase_email
   before_create :create_activation_digest
@@ -69,6 +71,11 @@ class User < ApplicationRecord
   def password_reset_expired?
     reset_sent_at < 2.hours.ago
     # 少ないとして捉えるな。早いとして捉える。「パスワード再設定メールの送信時刻が現在時刻より2時間以上早いの場合」
+  end
+
+  def feed
+    Micropost.where("user_id = ?", id)
+    # sqlクエリに大10する前にidがエスケープされるため、sqlインジェクションと呼ばれる深刻な穴を
   end
   private
   # メールアドレスを全て小文字にする

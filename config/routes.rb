@@ -20,4 +20,5 @@ Rails.application.routes.draw do
   resources :account_activations, only: [:edit]
   # 組み込みnリンクをクリックする場合はpatchではなくgetになるから、editで定義
   resources :password_resets, only:[:new,:create,:edit,:update]
+  resources :microposts, only: [:create,:destroy]
 end

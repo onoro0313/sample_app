@@ -1,0 +1,16 @@
+<li id="micropost-<%= micropost.id %>">
+  <%= link_to gravatar_for(micropost.user, size: 50), micropost.user %>
+  <span class="user"><%= link_to micropost.user.name, micropost.user %></span>
+  <span class="content">
+    <%= micropost.content %>
+    <%= image_tag micropost.picture.url if micropost.picture?%>
+    <!-- Micropostパーシャルのimage_tagヘルパーでその画像を描画できるようになります このメソッドは、画像用の属性名に応じて、CarrierWaveが自動的に生成してくれるメソッド -->
+  </span>
+  <span class="timestamp">
+    Posted <%= time_ago_in_words(micropost.created_at) %> ago.
+    <!-- time_ago_in_wordsヘルパーメソッド, 「3分前に投稿」文字列の出力 -->
+    <% if current_user?(micropost.user)%>
+      <%= link_to "delete", micropost, method: :delete, data: {confirm: "You sure?"} %>
+    <% end %>
+  </span>
+</li>
